@@ -1,0 +1,27 @@
+clear, clc
+syms s t
+TF =; %Enter transfer function here (ex: 16/(s^2+3*s+16) )
+
+[num, den] = numden(TF);
+numerator = sym2poly(num);
+denominator = sym2poly(den);
+
+wn = sqrt(numerator(1,1));
+
+second_coefficient = denominator(1,2);
+k = (numerator(1,1))/denominator(1,3);
+S = second_coefficient/(2*wn);
+
+%underdamped
+wd = wn*sqrt(1 - S^2);
+s1 = -wn*S + i*wd;
+s2 = -wn*S - i*wd;
+yt = k*(1-((exp(-S*wn*t))/(sqrt(1-S^2)))*sin(wn*t*sqrt(1-S^2))+ (sqrt(1-S^2))/S)  %Output via Step input
+
+theta = atan((sqrt(1-S^2))/S)    %phase angle
+
+tr = (pi-theta)/wd               %rise time
+tp = pi/wd                       %peak time
+ts2 = 4/(S*wn)                   %settling time at 2%
+ts5 = 3/(S*wn)                   %settling time at 5%
+PO = 100*exp(-S*pi/sqrt(1-S^2))  %percent overshoot
